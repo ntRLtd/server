@@ -25,11 +25,7 @@ export class AllExceptionsFilter implements ExceptionFilter {
       this.logger.error(message);
     }
 
-    /**
-     * WARNING
-     * If you are using @nestjs/platform-fastify you can use response.send() instead of response.json(). Don't forget to import the correct types from fastify.
-     */
-    response.status(status).send({
+    response.status(status).json({
       statusCode: status,
       message:
         typeof message === 'string'

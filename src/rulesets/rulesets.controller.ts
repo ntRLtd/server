@@ -7,9 +7,9 @@ import {
   HttpStatus,
   InternalServerErrorException,
   Logger,
-  Param,
   Query,
 } from '@nestjs/common';
+
 import { PREFIX_PATH } from './constants';
 import { IRulesetItem } from './rulesets.interface';
 import { FileContentGetterDto } from './rulesets.dto';
@@ -53,12 +53,5 @@ export class RulesetsController {
   async getContent(@Query() query: FileContentGetterDto): Promise<string> {
     const { filename } = query;
     return await this.rulesetsService.readContentByFilename(filename);
-  }
-
-  @Get('/:filename')
-  async getContentByFilename(
-    @Param() params: { filename: string },
-  ): Promise<string> {
-    return await this.rulesetsService.readContentByFilename(params.filename);
   }
 }
