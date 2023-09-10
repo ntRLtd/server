@@ -1,39 +1,37 @@
 import { join } from 'path';
-import { readdir, stat, readFile } from 'fs-extra';
+import { readdir, stat } from 'fs-extra';
 import {
-  BadRequestException,
   Controller,
   Get,
   HttpCode,
   HttpStatus,
   InternalServerErrorException,
   Logger,
+  Param,
   Query,
 } from '@nestjs/common';
+import { PREFIX_PATH } from './constants';
 import { IRulesetItem } from './rulesets.interface';
 import { FileContentGetterDto } from './rulesets.dto';
+import { RulesetsService } from './rulesets.service';
 
 @Controller('rulesets')
 export class RulesetsController {
-  static PREFIX_PATH = 'rulesets';
-
   private readonly logger = new Logger(RulesetsController.name);
+
+  constructor(private readonly rulesetsService: RulesetsService) {}
 
   @Get('list')
   @HttpCode(HttpStatus.OK)
   async listFiles() {
-    const _directoryPath = join(
-      __dirname,
-      '../assets',
-      RulesetsController.PREFIX_PATH,
-    );
+    const _directoryPath = join(__dirname, '../assets', PREFIX_PATH);
     try {
       const _res: IRulesetItem[] = [];
       const _fileList = await readdir(_directoryPath);
       for (const file of _fileList) {
         const filePath = join(_directoryPath, file);
         const _stat = await stat(filePath);
-        const _p = `${RulesetsController.PREFIX_PATH}/${file}`;
+        const _p = `${PREFIX_PATH}/${file}`;
 
         _res.push({
           name: file,
@@ -54,23 +52,13 @@ export class RulesetsController {
   @HttpCode(HttpStatus.OK)
   async getContent(@Query() query: FileContentGetterDto): Promise<string> {
     const { filename } = query;
-    const filePath = join(
-      __dirname,
-      '../assets',
-      RulesetsController.PREFIX_PATH,
-      filename,
-    ); // 你可能需要根据你的项目结构调整这里
-    const _stat = await stat(filePath);
+    return await this.rulesetsService.readContentByFilename(filename);
+  }
 
-    if (_stat.isDirectory()) {
-      throw new BadRequestException('Path is a directory');
-    }
-
-    if (_stat.size > 200 * 1024) {
-      // 200KB
-      throw new BadRequestException('File is larger than 200KB');
-    }
-
-    return await readFile(filePath, 'utf-8');
+  @Get('/:filename')
+  async getContentByFilename(
+    @Param() params: { filename: string },
+  ): Promise<string> {
+    return await this.rulesetsService.readContentByFilename(params.filename);
   }
 }
