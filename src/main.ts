@@ -12,7 +12,7 @@ async function bootstrap() {
   app.useGlobalInterceptors(new TransformInterceptor());
 
   // validate query
-  app.useGlobalPipes(new ValidationPipe());
+  app.useGlobalPipes(new ValidationPipe({ transform: true }));
 
   // filter expection
   app.useGlobalFilters(new AllExceptionsFilter());

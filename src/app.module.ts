@@ -1,21 +1,21 @@
 import { NestModule, Module, MiddlewareConsumer } from '@nestjs/common';
 import { ServeStaticModule } from '@nestjs/serve-static';
-import { join } from 'path';
 
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { RulesetsController } from './rulesets/rulesets.controller';
 import { RequestMiddleware } from './request/request.middleware';
-import { RulesetsService } from './rulesets/rulesets.service';
+import { ASSETS_PATH } from './constants';
+import { AssetsService } from './assets/assets.service';
 
 @Module({
   imports: [
     ServeStaticModule.forRoot({
-      rootPath: join(__dirname, 'assets'),
+      rootPath: ASSETS_PATH,
     }),
   ],
   controllers: [AppController, RulesetsController],
-  providers: [AppService, RulesetsService],
+  providers: [AppService, AssetsService],
 })
 export class AppModule implements NestModule {
   configure(consumer: MiddlewareConsumer) {
