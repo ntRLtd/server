@@ -1,9 +1,9 @@
 import { IsNotEmpty, IsString } from 'class-validator';
 
-export class DirItem {
+export class FileItem {
   @IsNotEmpty()
   @IsString()
-  filename: string;
+  name: string;
 
   @IsNotEmpty()
   @IsString()

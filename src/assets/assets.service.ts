@@ -1,8 +1,16 @@
 import { BadRequestException, Injectable, Logger } from '@nestjs/common';
-import { readFile, readdir, stat } from 'fs-extra';
+import {
+  exists,
+  readFile,
+  readdir,
+  writeFile,
+  stat,
+  access,
+  constants,
+} from 'fs-extra';
 import { join } from 'path';
 import { ASSETS_PATH } from 'src/constants';
-import { DirItem } from './assets.dto';
+import { FileItem } from './assets.dto';
 
 @Injectable()
 export class AssetsService {
@@ -16,6 +24,9 @@ export class AssetsService {
   async _readByName(filename: string, subDir?: string) {
     const filePath = join(ASSETS_PATH, subDir ? subDir : './', filename);
     this.logger.log(`read file from ${filePath}`);
+    const _exist = await exists(filePath);
+    if (!_exist) throw new BadRequestException('File not found');
+
     const _stat = await stat(filePath);
 
     if (_stat.isDirectory()) {
@@ -35,7 +46,7 @@ export class AssetsService {
     opt?: {
       recursive?: boolean;
     },
-  ): Promise<DirItem[]> {
+  ): Promise<FileItem[]> {
     const { recursive = false } = opt || {};
     const _dirPath = join(ASSETS_PATH, root);
     this.logger.log(`dir dir: ${_dirPath}`);
@@ -46,7 +57,7 @@ export class AssetsService {
     }
 
     const subDir: string[] = [];
-    const subFiles: DirItem[] = [];
+    const subFiles: FileItem[] = [];
     const content = await readdir(_dirPath);
     for (const item of content) {
       const _path = join(_dirPath, item);
@@ -58,7 +69,7 @@ export class AssetsService {
         subDir.push(relativePName);
       } else {
         subFiles.push({
-          filename: item,
+          name: item,
           path: _path.replace(ASSETS_PATH, ''),
         });
       }
@@ -73,5 +84,48 @@ export class AssetsService {
     }
 
     return subFiles;
+  }
+
+  async _readDirInPath(root: string) {
+    const dirPaths: FileItem[] = [];
+    const _dirPath = join(ASSETS_PATH, root);
+    const _stat = await stat(_dirPath);
+    if (!_stat.isDirectory()) {
+      throw new BadRequestException('Path is not a directory');
+    }
+
+    const content = await readdir(_dirPath);
+    for (const item of content) {
+      const _path = join(_dirPath, item);
+      const itemStat = await stat(_path);
+      if (itemStat.isDirectory()) {
+        dirPaths.push({
+          name: item,
+          path: join(root, item),
+        });
+      }
+    }
+    return dirPaths;
+  }
+
+  async _overwriteFile(filepath: string, content: string, subDir?: string) {
+    const filePath = join(ASSETS_PATH, subDir || './', filepath);
+    this.logger.log(`write file to ${filePath}`);
+    const _exist = await exists(filePath);
+    if (!_exist) throw new BadRequestException('File already exists');
+
+    try {
+      await access(filePath, constants.W_OK);
+      await writeFile(filePath, content, {
+        encoding: 'utf8',
+      });
+      return true;
+    } catch (error) {
+      this.logger.error(error.message);
+      this.logger.error(error.stack);
+      throw new BadRequestException(
+        'Could not write file, or have no permission to write',
+      );
+    }
   }
 }
