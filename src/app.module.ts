@@ -7,6 +7,7 @@ import { RulesetsController } from './rulesets/rulesets.controller';
 import { RequestMiddleware } from './request/request.middleware';
 import { ASSETS_PATH } from './constants';
 import { AssetsService } from './assets/assets.service';
+import { RulesetsService } from './rulesets/rulesets.service';
 
 @Module({
   imports: [
@@ -15,7 +16,7 @@ import { AssetsService } from './assets/assets.service';
     }),
   ],
   controllers: [AppController, RulesetsController],
-  providers: [AppService, AssetsService],
+  providers: [AppService, AssetsService, RulesetsService],
 })
 export class AppModule implements NestModule {
   configure(consumer: MiddlewareConsumer) {

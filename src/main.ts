@@ -17,6 +17,13 @@ async function bootstrap() {
   // filter expection
   app.useGlobalFilters(new AllExceptionsFilter());
 
+  // enable cors in localhost
+  app.enableCors({
+    origin: 'http://localhost:3000',
+    methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+    credentials: true,
+  });
+
   await app.listen(3018);
 }
 bootstrap();
