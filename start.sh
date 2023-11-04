@@ -13,6 +13,7 @@ fi
 # 检查 pnpm 是否已经安装
 if ! volta list pnpm &> /dev/null
 then
+    echo "缺少 pnpm，正在安装"
     # 如果 pnpm 没有安装，那么安装它
     volta install pnpm
 fi
@@ -26,6 +27,7 @@ pnpm run build
 # 检查 pm2 是否已经安装
 if ! volta list pm2 &> /dev/null
 then
+    echo "缺少 pm2，正在安装"
     # 如果 pm2 没有安装，那么安装它
     volta install pm2
 fi
