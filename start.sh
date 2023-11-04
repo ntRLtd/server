@@ -10,7 +10,7 @@ then
     exit 1
 fi
 
-volta install pnpm
+volta install node pmpm pm2
 
 # 使用 pnpm 安装依赖
 pnpm install
@@ -19,7 +19,6 @@ pnpm install
 pnpm run build
 
 
-volta install pm2
 
 # 清理所有 pm2 进程
 pm2 delete all
