@@ -10,7 +10,9 @@ then
     exit 1
 fi
 
-volta install node pmpm pm2
+volta install node
+volta install pnpm
+volta install pm2
 
 # 使用 pnpm 安装依赖
 pnpm install
