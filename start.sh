@@ -18,12 +18,10 @@ volta install pm2
 pnpm install
 
 # 使用 pnpm 编译项目
-pnpm run build
-
-
+pnpm build
 
 # 清理所有 pm2 进程
 pm2 delete all
 
 # 启动 pm2
-pm2 start ecosystem.config.js
+pm2 start pm2.config.js
