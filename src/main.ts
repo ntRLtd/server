@@ -27,7 +27,14 @@ async function bootstrap() {
       }
 
       // is a vercel domain and path include "-ntrltd"
-      if (origin.includes('vercel.app') && origin.includes('-ntrltd')) {
+      const ntrPagePrefixes = [
+        'ntrwiki', // online page
+        '-ntrltd', // test branch
+      ];
+      if (
+        origin.includes('vercel.app') &&
+        ntrPagePrefixes.some((prefix) => origin.includes(prefix))
+      ) {
         callback(null, true);
         return;
       }
