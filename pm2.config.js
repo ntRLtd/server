@@ -1,4 +1,4 @@
-{
+module.exports = {
   apps: [
     {
       name: 'ntr-server',
@@ -8,5 +8,5 @@
         NODE_ENV: 'production',
       },
     },
-  ];
-}
+  ],
+};

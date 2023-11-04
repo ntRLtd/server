@@ -24,4 +24,4 @@ pnpm build
 pm2 delete all
 
 # 启动 pm2
-pm2 start pm2.config.js
+pm2 start ./pm2.config.js
