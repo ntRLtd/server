@@ -14,12 +14,24 @@ async function bootstrap() {
   // validate query
   app.useGlobalPipes(new ValidationPipe({ transform: true }));
 
-  // filter expection
+  // filter exception
   app.useGlobalFilters(new AllExceptionsFilter());
 
   // enable cors in localhost
   app.enableCors({
-    origin: 'http://localhost:3000',
+    origin: (origin, callback) => {
+      // is localhost debug
+      if (origin.includes('localhost')) {
+        callback(null, true);
+        return;
+      }
+
+      // is a vercel domain and path include "-ntrltd"
+      if (origin.includes('vercel.app') && origin.includes('-ntrltd')) {
+        callback(null, true);
+        return;
+      }
+    },
     methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
     credentials: true,
   });
